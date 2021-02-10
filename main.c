@@ -4,7 +4,7 @@ main(){
 
   char kek = '!';
   
-printf ("hello world ",kek);
+printf ("hello world%c",kek);
 
 
 
