@@ -2,7 +2,9 @@
 
 main(){
 
-printf ("hello world");
+  char kek = '!';
+  
+printf ("hello world ",kek);
 
 
 
