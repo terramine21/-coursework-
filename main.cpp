@@ -91,9 +91,9 @@ public:
     {
         std::list <std::string> chains;
         int from = 0;
-        for (int i = 0; i < chain.size(); i++) //первое деление
+        for (int i = 0; i < chain.size(); i++) //деление на подстроки
         {
-            if (rand() % 2 + 1 == p || i == chain.size() - 1)
+            if (rand() % 2 + 1 == p || i == chain.size() - 1 || (i - from) >= 1)
             {
                 std::string str1 = {};
                 for (; from <= i; from++)
@@ -103,53 +103,26 @@ public:
                 chains.push_back(str1);
             }
         }
-
-        bool level = false;
-        while(!level)
-        for (std::string it : chains) //деление второе
-        {
-            int count = 0; //костыль
-            level = true;
-            from = 0;
-            if (it.size() > 2) {
-                level = false;
-                for (int i = 0; i < it.size(); i++)
-                {
-                    if (rand() % 2 + 1 == p || i == chain.size() - 1)
-                    {
-                        std::string str1 = {};
-                        for (; from <= i; from++)
-                        {
-                            str1 += it[from];
-                        }
-                        std::list <std::string> ::iterator iti;
-                        std::advance(iti, count);
-                        chains.insert(iti, str1); //где-то проблема
-                    }
-                }
-            }
-        }
-
         return chains;
     }
 
     std::list <std::string> apply_rule(std::list <std::string> chains, int p)
     {
-         for (std::string i : chains)
+         for (auto it = chains.begin(); it != chains.end(); it++)
         {
-             if (rand() + 1 == p)
+             if (rand() % 2 + 1 == p)
              {
-                 if (i == "01")
-                     i = "11";
+                 if (*it == "01")
+                     *it = "11";
 
-                 if (i == "12")
-                     i = "22";
+                 if (*it == "12")
+                     *it = "22";
 
-                 if (i == "2")
-                     i = "0";
+                 if (*it == "2")
+                     *it = "0";
 
-                 if (i == "1")
-                     i = "0";
+                 if (*it == "1")
+                     *it = "0";
              }
         }
          return chains;
@@ -158,48 +131,40 @@ public:
 
 int main()
 {
+    srand(2489);
+    int p = 2; //вероятность
 
-    const int width = 3, height = 3;
+    const int width = 100, height = 100;
     int **arr = arr_build(width, height);
-
-    int k = 0;
 
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            k = k + 1;
-            arr[i][j] = k;
+            arr[i][j] = rand() % 3;
         }
     }
     Chain_Build chain_build;
-    std::string chain = chain_build.by_line(arr, 3, 3);
+    std::string chain = chain_build.by_line(arr, width, height);
     std::cout<< chain << std::endl;
-
-    srand(21234);
-    int p = 2; //вероятность
-    std::list <std::string> chains = chain_build.chains_breaker(chain, p);
+    std::cout << "_____________________" << std::endl;
     
+    std::list <std::string> chains = chain_build.chains_breaker(chain, p);
+
+    for (std::string i : chains)
+    {
+        std::cout << i << std::endl;
+    }
+    std::cout << "_____________________" << std::endl;
     chain = {};
+    chains = chain_build.apply_rule(chains, p);
     for (std::string i : chains)
     {
         std::cout << i << std::endl;
         chain += i;
     }
+    std::cout << "_____________________" << std::endl;
+
     std::cout << chain << std::endl;
-
-
-
-
-    std::cout << "_______________" << std::endl;
-
-    std::list <std::string> keke = { "11", "33", "55" };
-    std::list <std::string> ::iterator it = keke.begin();
-    std::advance(it, 1);
-    keke.insert(it, "22");
-    std::advance(it, -1);
-    std::string kek = *it;
-    std::cout << kek << std::endl;
-
 
 }
