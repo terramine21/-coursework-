@@ -4,34 +4,116 @@
 #include <vector>
 #include <random>
 #include <list>
-
-void map_draw(png::image <png::rgb_pixel> &image, size_t width, size_t height)
+int count = 0;
+void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, int** arr)
 {
+    png::rgb_pixel color0 = png::rgb_pixel(0, 0, 0);
+    png::rgb_pixel color1 = png::rgb_pixel(0, 255, 0);
+    png::rgb_pixel color2 = png::rgb_pixel(0, 0, 255);
+
+
     for (png::uint_32 i = 0; i != image.get_width(); i++)
     {
         for (png::uint_32 j = 0; j != image.get_height(); j++)
         {
-            std::vector <png::uint_32> color = { 100, 100, 100 };
-            image[i][j] = png::rgb_pixel(color[0], color[1], color[2]); //нужно записать одной переменной
+            if (arr[i][j] == 0)
+                image[i][j] = color0;
+            if (arr[i][j] == 1)
+                image[i][j] = color1;
+            if (arr[i][j] == 2)
+                image[i][j] = color2;
         }
     }
-    image.write("out/palette1.png");
+    image.write("out/palette" + std::to_string(count) + ".png");
+    count++;
 }
 
-int** arr_build(size_t x, size_t y)
+class Arr_Collect
 {
-    int** arr = new int* [x];
-    for (int i = 0; i < x; i++)
+public:
+    void arr_build_re_by_line(int** arr, std::string chain, size_t height, size_t width)
     {
-        arr[i] = new int[y];
+        size_t count = 0;
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                arr[i][j] = chain[count];
+                count++;
+            }
+        }
     }
-    return arr;
-}
+    void arr_build_by_line(int** arr, std::string chain, size_t height, size_t width)
+    {
+        size_t count = 0;
+        for (int i = width - 1; i >= 0; i--)
+        {
+            for (int j = height - 1; j >= 0; j--)
+            {
+                arr[i][j] = chain[count];
+                count++;
+            }
+        }
+    }
+    void arr_build_by_colomn(int** arr, std::string chain, size_t height, size_t width)
+    {
+        size_t count = 0;
+        for (int i = width - 1; i >= 0; i--)
+        {
+            for (int j = height - 1; j >= height; j--)
+            {
+                arr[j][i] = chain[count];
+                count++;
+            }
+        }
+    }
+    void arr_build_re_by_colomn(int** arr, std::string chain, size_t height, size_t width)
+    {
+        size_t count = 0;
+        for (int i = width - 1; i >= 0; i--)
+        {
+            for (int j = height - 1; j >= 0; j--)
+            {
+                arr[j][i] = (int)chain[count];
+                count++;
+            }
+        }
+    }
+    void arr_build(int** arr, std::string chain, size_t height, size_t width, size_t a)
+    {
+        if (a == 0)
+            arr_build_by_line(arr, chain, height, width);
+        else if (a == 1)
+            arr_build_re_by_line(arr, chain, height, width);
+        else if (a == 2)
+            arr_build_by_colomn (arr, chain, height, width);
+        else if (a == 3)
+            arr_build_re_by_colomn(arr, chain, height, width);
+    }
 
-
+    int** arr_create(size_t x, size_t y)
+    {
+        int** arr = new int* [x];
+        for (int i = 0; i < x; i++)
+        {
+            arr[i] = new int[y];
+        }
+        return arr;
+    }
+    void arr_fill(int** arr, size_t height, size_t width)
+    {
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                arr[i][j] = rand() % 3;
+            }
+        }
+    }
+};
 class Chain_Build {
 public:
-    std::string by_line(int** arr, size_t width, size_t height)
+    std::string str_build_by_line(int** arr, size_t height, size_t width)
     {
         std::string str = {};
 
@@ -44,8 +126,7 @@ public:
         }
         return str;
     }
-
-    std::string re_by_line(int** arr, size_t width, size_t height)
+    std::string str_build_re_by_line(int** arr, size_t height, size_t width)
     {
         std::string str = {};
 
@@ -58,8 +139,7 @@ public:
         }
         return str;
     }
-
-    std::string by_colomn(int** arr, size_t width, size_t height)
+    std::string str_build_by_colomn(int** arr, size_t height, size_t width)
     {
         std::string str = {};
 
@@ -72,8 +152,7 @@ public:
         }
         return str;
     }
-
-    std::string re_by_colomn(int** arr, size_t width, size_t height)
+    std::string str_build_re_by_colomn(int** arr, size_t height, size_t width)
     {
         std::string str = {};
 
@@ -86,14 +165,27 @@ public:
         }
         return str;
     }
-    
-    std::list <std::string> chains_breaker(std:: string chain, int p)
+    std::string str_build(int** arr, size_t height, size_t width, size_t a)
+    {
+        std::string chain = {};
+        if (a == 0)
+            chain = str_build_by_line(arr, height, width);
+        else if (a == 1)
+            chain = str_build_re_by_line(arr, height, width);
+        else if (a == 2)
+            chain = str_build_by_colomn(arr, height, width);
+        else if (a == 3)
+            chain = str_build_re_by_colomn(arr, height, width);
+        return chain;
+    }
+
+    std::list <std::string> chains_breaker(std::string chain, int p)
     {
         std::list <std::string> chains;
         int from = 0;
         for (int i = 0; i < chain.size(); i++) //деление на подстроки
         {
-            if (rand() % 2 + 1 == p || i == chain.size() - 1 || (i - from) >= 1)
+            if (rand()%10 < p || i == chain.size() - 1 || (i - from) >= 1)
             {
                 std::string str1 = {};
                 for (; from <= i; from++)
@@ -105,66 +197,50 @@ public:
         }
         return chains;
     }
-
     std::list <std::string> apply_rule(std::list <std::string> chains, int p)
     {
-         for (auto it = chains.begin(); it != chains.end(); it++)
+        for (auto it = chains.begin(); it != chains.end(); it++)
         {
-             if (rand() % 2 + 1 == p)
-             {
-                 if (*it == "01")
-                     *it = "11";
+            if (rand() % 10 < p)
+            {
+                if (*it == "01")
+                    *it = "11";
 
-                 if (*it == "12")
-                     *it = "22";
+                if (*it == "12")
+                    *it = "22";
 
-                 if (*it == "2")
-                     *it = "0";
+                if (*it == "2")
+                    *it = "0";
 
-                 if (*it == "1")
-                     *it = "0";
-             }
+                if (*it == "1")
+                    *it = "0";
+            }
         }
-         return chains;
+        return chains;
     }
 };
 
 int main()
 {
-    srand(2489);
-    int p = 2; //вероятность
-
+    srand(26324624);
+    int p = 3; //вероятность в %
     const int width = 100, height = 100;
-    int **arr = arr_build(width, height);
+    png::image<png::rgb_pixel> image(height, width);
 
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            arr[i][j] = rand() % 3;
-        }
-    }
+    Arr_Collect arr_collect;
+    int** arr = arr_collect.arr_create(height, width);
+    arr_collect.arr_fill(arr, height, width);
+    map_draw(image, height, width, arr);
+
     Chain_Build chain_build;
-    std::string chain = chain_build.by_line(arr, width, height);
-    std::cout<< chain << std::endl;
-    std::cout << "_____________________" << std::endl;
-    
+    int a = rand() % 4;
+    std::string chain = chain_build.str_build(arr, height, width, a);
     std::list <std::string> chains = chain_build.chains_breaker(chain, p);
-
-    for (std::string i : chains)
-    {
-        std::cout << i << std::endl;
-    }
-    std::cout << "_____________________" << std::endl;
-    chain = {};
     chains = chain_build.apply_rule(chains, p);
     for (std::string i : chains)
-    {
-        std::cout << i << std::endl;
         chain += i;
-    }
-    std::cout << "_____________________" << std::endl;
 
-    std::cout << chain << std::endl;
+    arr_collect.arr_build(arr, chain, height, width, a);
 
+    map_draw(image, height, width, arr);
 }
