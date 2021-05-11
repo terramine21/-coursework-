@@ -5,6 +5,7 @@
 #include <random>
 #include <list>
 #include <time.h>
+#include <cstdlib>
 
 size_t count = 0;
 void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, int** arr)
@@ -33,14 +34,15 @@ void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, i
 class Arr_Collect
 {
 public:
-    void arr_build_by_line(int** arr, std::string chain, size_t height, size_t width)
+    void arr_build_by_line(int** arr, const std::string& chain, size_t height, size_t width)
     {
         size_t count = 0;
         for (int i = 0; i < height; i++)
         {
             for (int j = 0; j < width; j++)
             {
-                arr[i][j] = chain[count];
+                int KOSTIL = (int)chain[count] - 48;
+                arr[i][j] = KOSTIL;
                 count++;
             }
         }
@@ -52,7 +54,8 @@ public:
         {
             for (int j = height - 1; j >= 0; j--)
             {
-                arr[i][j] = chain[count];
+                int KOSTIL = (int)chain[count] - 48;
+                arr[i][j] = KOSTIL;
                 count++;
             }
         }
@@ -64,7 +67,8 @@ public:
         {
             for (int j = height - 1; j >= height; j--)
             {
-                arr[j][i] = chain[count];
+                int KOSTIL = (int)chain[count] - 48;
+                arr[i][j] = KOSTIL;
                 count++;
             }
         }
@@ -76,7 +80,8 @@ public:
         {
             for (int j = height - 1; j >= 0; j--)
             {
-                arr[j][i] = chain[count];
+                int KOSTIL = (int)chain[count] - 48;
+                arr[i][j] = KOSTIL;
                 count++;
             }
         }
@@ -226,7 +231,7 @@ int main()
 
     srand(time(NULL));
     int p = 6; //вероятность в % * 10
-    const int width = 10, height = 10;
+    const int width = 100, height = 100;
     png::image<png::rgb_pixel> image(height, width);
 
 
@@ -239,7 +244,7 @@ int main()
     {
         for (int j = 0; j < width; j++)
         {
-            std::cout << arr[i][j] + " ";
+            std::cout << arr[i][j] << " ";
         }
         std::cout << std::endl;
     } 
@@ -262,15 +267,13 @@ int main()
     std::cout << std::endl;
     //std::cout << chain;
 
-
     arr_collect.arr_build(arr, chain, height, width, a);
-    
     
     for (int i = 0; i < height; i++)
     {
         for (int j = 0; j < width; j++)
         {
-            std::cout << arr[i][j] + " ";
+            std::cout << arr[i][j] << " ";
         }
         std::cout << std::endl;
     } 
