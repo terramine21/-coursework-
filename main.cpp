@@ -1,11 +1,8 @@
 #include <iostream>
-#include <ostream>
 #include <png.hpp>
-#include <vector>
 #include <random>
 #include <list>
 #include <time.h>
-#include <cstdlib>
 
 size_t count = 0;
 void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, int** arr)
@@ -47,7 +44,7 @@ public:
             }
         }
     }
-    void arr_build_re_by_line(int** arr, std::string chain, size_t height, size_t width)
+    void arr_build_re_by_line(int** arr, const std::string& chain, size_t height, size_t width)
     {
         size_t count = 0;
         for (int i = width - 1; i >= 0; i--)
@@ -60,7 +57,7 @@ public:
             }
         }
     }
-    void arr_build_by_colomn(int** arr, std::string chain, size_t height, size_t width)
+    void arr_build_by_colomn(int** arr, const std::string& chain, size_t height, size_t width)
     {
         size_t count = 0;
         for (int i = width - 1; i >= 0; i--)
@@ -73,7 +70,7 @@ public:
             }
         }
     }
-    void arr_build_re_by_colomn(int** arr, std::string chain, size_t height, size_t width)
+    void arr_build_re_by_colomn(int** arr,const std::string& chain, size_t height, size_t width)
     {
         size_t count = 0;
         for (int i = width - 1; i >= 0; i--)
@@ -86,7 +83,7 @@ public:
             }
         }
     }
-    void arr_build(int** arr, std::string chain, size_t height, size_t width, size_t a)
+    void arr_build(int** arr,const std::string& chain, size_t height, size_t width, size_t a)
     {
         if (a == 0)
             arr_build_by_line(arr, chain, height, width);
@@ -230,7 +227,7 @@ int main()
 {
 
     srand(time(NULL));
-    int p = 6; //вероятность в % * 10
+    int p = 5; //вероятность в % * 10
     const int width = 100, height = 100;
     png::image<png::rgb_pixel> image(height, width);
 
@@ -239,45 +236,31 @@ int main()
     int** arr = arr_collect.arr_create(height, width);
     arr_collect.arr_fill(arr, height, width);
 
-    
-    for (int i = 0; i < height; i++)
-    {
-        for (int j = 0; j < width; j++)
-        {
-            std::cout << arr[i][j] << " ";
-        }
-        std::cout << std::endl;
-    } 
-
     map_draw(image, height, width, arr); //первый кадр
 
     Chain_Build chain_build;
-    int a = rand() % 4;
-    std::string chain = chain_build.str_create(arr, height, width, a);
-    //std::cout << chain << std::endl;
-    std::list<std::string> chains = chain_build.chains_breaker(chain, p);
-    chain_build.apply_rule(chains, p);
-    
-    chain = {};
-    for (auto it = chains.begin(); it != chains.end(); it++)
-    {
-        chain = chain + *it;
-        //std::cout << *it + " ";
-    }
-    std::cout << std::endl;
-    //std::cout << chain;
 
-    arr_collect.arr_build(arr, chain, height, width, a);
     
-    for (int i = 0; i < height; i++)
+    for (int frame = 0; frame < 100 ; frame++)
     {
-        for (int j = 0; j < width; j++)
+        int a = rand() % 4;
+        std::string chain = chain_build.str_create(arr, height, width, a);
+        //std::cout << chain << std::endl;
+        std::list<std::string> chains = chain_build.chains_breaker(chain, p);
+        chain_build.apply_rule(chains, p);
+
+        chain = {};
+        for (auto it = chains.begin(); it != chains.end(); it++)
         {
-            std::cout << arr[i][j] << " ";
+            chain = chain + *it;
         }
-        std::cout << std::endl;
-    } 
+        arr_collect.arr_build(arr, chain, height, width, a);
 
-    map_draw(image, height, width, arr); //второй кадр
+        map_draw(image, height, width, arr); //второй кадр
+    }
+
+    for (int i = 0; i < height; i++)
+        delete[] arr[i];
+    delete[] arr;
 
 }
