@@ -30,7 +30,7 @@ void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, i
             
         }
     }
-    if (frame % 50 == 0)
+    if (frame % 10 == 0)
     {
         image.write("out/frame" + std::to_string(frame) + ".png"); std::cout << a << " " << b << std::endl;
     }
@@ -219,8 +219,8 @@ public:
     { //0 - nothing, 1 - grass, 2 - cow
         for (auto it = chains.begin(); it != chains.end(); it++)
         {
-            int p = 2, q = 10, r = 1, rnd = rand() % 100 + 1;
-            if (p < rnd)
+            int p = 2, q = 10, r = 1, rnd = rand() % 100;
+            if (rnd < p)
             {
                 if (*it == "10")
                     *it = "01";
@@ -235,17 +235,16 @@ public:
                 else if (*it == "21")
                     *it = "12";
             }
-            else if (q < rnd)
+            if (rnd < q)
             {
                 if (*it == "10")
                     *it = "11";
                 else if (*it == "12")
                     *it = "22";
             }
-            else if(r < rnd)
+            if(rnd < r)
             if (*it == "2")
                 *it = "0";
-               
         }
     }
 };
