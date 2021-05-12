@@ -15,19 +15,21 @@ void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, i
     {
         for (png::uint_32 j = 0; j != image.get_height(); j++)
         {
-            if (arr[i][j] == 0)
-                image[i][j] = color0;
-            if (arr[i][j] == 1)
+            switch (arr[i][j])
             {
+            case 0:
+                image[i][j] = color0;
+                break;
+            case 1:
                 image[i][j] = color1;
                 a++;
-            }
-            if (arr[i][j] == 2)
-            {
+                break;
+            case 2:
+
                 image[i][j] = color2;
                 b++;
+                break;
             }
-            
         }
     }
     if (frame % 10 == 0)
@@ -35,7 +37,6 @@ void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, i
         image.write("out/frame" + std::to_string(frame) + ".png"); std::cout << a << " " << b << std::endl;
     }
 }
-
 class Arr_Collect
 {
 public:
@@ -93,14 +94,21 @@ public:
     }
     void arr_build(int** arr,const std::string& chain, size_t height, size_t width, size_t a)
     {
-        if (a == 0)
+        switch (a)
+        {
+        case 0:
             arr_build_by_line(arr, chain, height, width);
-        else if (a == 1)
+            break;
+        case 1:
             arr_build_re_by_line(arr, chain, height, width);
-        else if (a == 2)
-            arr_build_by_colomn (arr, chain, height, width);
-        else if (a == 3)
+            break;
+        case 2:
+            arr_build_by_colomn(arr, chain, height, width);
+            break;
+        case 3:
             arr_build_re_by_colomn(arr, chain, height, width);
+            break;
+        }
     }
     int** arr_create(size_t x, size_t y)
     {
@@ -178,16 +186,24 @@ public:
     }
     std::string str_create(int** arr, size_t height, size_t width, size_t a)
     {
-        std::string str = {};
-        if (a == 0)
-            str = str_build_by_line(arr, height, width);
-        else if (a == 1)
-            str = str_build_re_by_line(arr, height, width);
-        else if (a == 2)
-            str = str_build_by_colomn(arr, height, width);
-        else if (a == 3)
-            str = str_build_re_by_colomn(arr, height, width);
-        return str;
+        switch (a)
+        {
+        case 0:
+            return str_build_by_line(arr, height, width);
+        case 1:
+            return str_build_re_by_line(arr, height, width);
+
+        case 2:
+            return str_build_by_colomn(arr, height, width);
+
+        case 3:
+            return str_build_re_by_colomn(arr, height, width);
+
+        default: return "";
+            
+
+
+        }
     }
 
     std::list <std::string> chains_breaker(const std::string& chain, int p)
@@ -276,7 +292,7 @@ int main()
         chain = {};
         for (auto it = chains.begin(); it != chains.end(); it++)
         {
-            chain = chain + *it;
+            chain += *it;
         }
         arr_collect.arr_build(arr, chain, height, width, a);
 
