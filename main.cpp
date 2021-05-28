@@ -1,307 +1,447 @@
 #include <iostream>
 #include <png.hpp>
 #include <random>
-#include <list>
 #include <time.h>
 #include <vector>
 
 
-char** matrix_create(size_t y, size_t x)
+class Matrix
 {
-	char** arr = new char* [x];
-	for (int i = 0; i < x; i++)
-		arr[i] = new char[y];
+	char** Arr = nullptr;
+	size_t N = 5, M = 5;
+public:
+	Matrix(size_t n, size_t m);
+	Matrix();
+	~Matrix();
+	void fill();
 
-	return arr;
-}
-void matrix_fill(char** matrix, size_t y, size_t x)
-{
-	for (int i = 0; i < y; i++)
-		for (int j = 0; j < x; j++)
-			matrix[i][j] = (char)(rand() % 3 + 48);
-}
-void matrix_print(char** matrix, size_t y, size_t x)
-{
-	for (int i = 0; i < y; i++)
-	{
-		for (int j = 0; j < x; j++)
-		{
-			std::cout << matrix[i][j] << " ";
-		}
-		std::cout << std::endl;
-	}
-}
 
-void str_build_by_line(char** arr, char* str, size_t height, size_t width)
-{
-	size_t k = 0;
-	for (int i = 0; i < height; i++)
+	Matrix(size_t n, size_t m)
 	{
-		for (int j = 0; j < width; j++)
-		{
-			str[k] = arr[i][j];
-			k++;
-		}
+		N = n;
+		M = m;
+		char** arr = new char* [n];
+		for (int i = 0; i < n; i++)
+			arr[i] = new char[m];
+		Arr = arr;
+		fill();
 	}
-}
-void str_build_re_by_line(char** arr, char* str, size_t height, size_t width)
-{
-	size_t k = 0;
+	Matrix()
+	{
+		char** arr = new char* [N];
+		for (int i = 0; i < N; i++)
+			arr[i] = new char[M];
+		Arr = arr;
+		fill();
+	}
+	~Matrix()
+	{
+		for (int i = 0; i < N; i++)
+			delete[] Arr[i]; 
+		delete[] Arr;
+	}
 
-	for (int i = height - 1; i >= 0; i--)
+	void fill()
 	{
-		for (int j = width - 1; j >= 0; j--)
-		{
-			str[k] = arr[i][j];
-			k++;
-		}
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < M; j++)
+				Arr[i][j] = (char)(rand() % 3 + 48);
 	}
-}
-void str_build_by_colomn(char** arr, char* str, size_t height, size_t width)
-{
-	size_t k = 0;
+	char** get_matrix()
+	{
+		return Arr;
+	}
+};
 
-	for (int i = 0; i < width; i++)
-	{
-		for (int j = 0; j < height; j++)
-		{
-			str[k] = arr[j][i];
-			k++;
-		}
-	}
-}
-void str_build_re_by_colomn(char** arr, char* str, size_t height, size_t width)
-{
-	size_t k = 0;
 
-	for (int i = width - 1; i >= 0; i--)
-	{
-		for (int j = height - 1; j >= 0; j--)
-		{
-			str[k] = arr[j][i];
-			k++;
-		}
-	}
-}
-void str_build(char** arr, char* str, size_t height, size_t width, size_t a)
-{
-	switch (a)
-	{
-	case 0:
-		str_build_by_line(arr, str, height, width);
-		break;
-	case 1:
-		str_build_re_by_line(arr, str, height, width);
-		break;
-	case 2:
-		str_build_by_colomn(arr, str, height, width);
-		break;
 
-	case 3:
-		str_build_re_by_colomn(arr, str, height, width);
-	}
-}
-char* str_create(size_t size)
-{
-	char* str = new char[size];
-	return str;
-}
 
-void arr_build_by_line(char** arr, char* str, size_t height, size_t width)
+class Marksys
 {
-	size_t k = 0;
-	for (int i = 0; i < height; i++)
-	{
-		for (int j = 0; j < width; j++)
-		{
-			arr[i][j] = str[k];
-			k++;
-		}
-	}
-}
-void arr_build_re_by_line(char** arr, char* str, size_t height, size_t width)
-{
-	size_t k = 0;
-	for (int i = width - 1; i >= 0; i--)
-	{
-		for (int j = height - 1; j >= 0; j--)
-		{
-			arr[i][j] = str[k];
-			k++;
-		}
-	}
-}
-void arr_build_by_colomn(char** arr, char* str, size_t height, size_t width)
-{
-	size_t k = 0;
-	for (int i = 0; i < height; i++)
-	{
-		for (int j = 0; j < width; j++)
-		{
-			arr[j][i] = str[k];
-			k++;
-		}
-	}
-}
-void arr_build_re_by_colomn(char** arr, char* str, size_t height, size_t width)
-{
-	size_t k = 0;
-	for (int i = width - 1; i >= 0; i--)
-	{
-		for (int j = height - 1; j >= 0; j--)
-		{
-			arr[j][i] = str[k];
-			k++;
-		}
-	}
-}
-void arr_build(char** arr, char* str, size_t height, size_t width, size_t a)
-{
-	switch (a)
-	{
-	case 0:
-		arr_build_by_line(arr, str, height, width);
-		break;
-	case 1:
-		arr_build_re_by_line(arr, str, height, width);
-		break;
-	case 2:
-		arr_build_by_colomn(arr, str, height, width);
-		break;
-	case 3:
-		arr_build_re_by_colomn(arr, str, height, width);
-		break;
-	}
-}
-double uniform01()
-{
-	return (double)rand() / (double)RAND_MAX;
-}
-void apply_rule(char* str, size_t chance, size_t size)
-{
-	double p = 0.02, q = 0.1, r = 0.01;
-	for (size_t i = 0; i < size - 1;)
-	{
-		if (uniform01() < p && str[i] == '1' && str[i + 1] == '0')
-		{
-			str[i] = '0';
-			str[i + 1] = '1';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < p && str[i] == '0' && str[i + 1] == '1')
-		{
-			str[i] = '1';
-			str[i + 1] = '0';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < p && str[i] == '2' && str[i + 1] == '0')
-		{
-			str[i] = '0';
-			str[i + 1] = '2';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < p && str[i] == '0' && str[i + 1] == '2')
-		{
-			str[i] = '2';
-			str[i + 1] = '0';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < p && str[i] == '1' && str[i + 1] == '2')
-		{
-			str[i] = '2';
-			str[i + 1] = '1';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < p && str[i] == '2' && str[i + 1] == '1')
-		{
-			str[i] = '1';
-			str[i + 1] = '2';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < q && str[i] == '1' && str[i + 1] == '0')
-		{
-			str[i] = '1';
-			str[i + 1] = '1';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < q && str[i] == '1' && str[i + 1] == '2')
-		{
-			str[i] = '2';
-			str[i + 1] = '2';
-			i += 2 + rand() % 3;
-		}
-		else if (uniform01() < r && str[i] == '2')
-		{
-			str[i] = '0';
-			i += 2 + rand() % 3;
-		}
-		else
-			i++;
-	}
-}
+	size_t N = 20, M = 20, Scale = 1, Size = N*M, Frames = 1000;
+	char** Arr = {};
+	char* Str = {};
+	png::image<png::rgb_pixel> Image = {};
+public:
 
-void str_print(char* str, size_t size)
-{
-	for (size_t i = 0; i < size; i++)
-		std::cout << str[i] << " ";
-	std::cout << std::endl;
-}
-void map_draw(png::image <png::rgb_pixel>& image, size_t height, size_t width, char** arr, size_t frame)
-{
-	png::rgb_pixel color0 = png::rgb_pixel(0, 0, 0);
-	png::rgb_pixel color1 = png::rgb_pixel(0, 255, 0);
-	png::rgb_pixel color2 = png::rgb_pixel(255, 0, 0);
-	int a = 0, b = 0; //для счёт жертв и хищников
 
-	for (png::uint_32 i = 0; i != image.get_width(); i++)
+	void set_size(size_t n, size_t m)
 	{
-		for (png::uint_32 j = 0; j != image.get_height(); j++)
+		N = n;
+		M = m;
+		Size = N * M;
+	}
+	void set_scale(size_t scale)
+	{
+		Scale = scale;
+	}
+	void set_image()
+	{
+		Image = png::image<png::rgb_pixel> (N * Scale, M * Scale);
+	}
+
+	void matrix_create()
+	{
+		char** arr = new char* [N];
+		for (int i = 0; i < N; i++)
+			arr[i] = new char[M];
+
+		Arr = arr;
+	}
+	void matrix_fill()
+	{
+		for (int i = 0; i < N; i++)
+			for (int j = 0; j < M; j++)
+				Arr[i][j] = (char)(rand() % 3 + 48);
+	}
+
+	void str_build_by_line()
+	{
+		size_t k = 0;
+		for (int i = 0; i < N; i++)
 		{
-			switch (arr[i][j])
+			for (int j = 0; j < M; j++)
 			{
-			case'0':
-				image[i][j] = color0;
-				break;
-			case '1':
-				image[i][j] = color1;
-				a++;
-				break;
-			case '2':
-				image[i][j] = color2;
-				b++;
-				break;
+				Str[k] = Arr[i][j];
+				k++;
 			}
 		}
 	}
-	if (frame % 10 == 0)
+	void str_build_re_by_line()
 	{
-		image.write("out/frame" + std::to_string(frame) + ".png");
-		std::cout << ++frame << " " << a << " " << b << std::endl;
+		size_t k = 0;
+
+		for (int i = N - 1; i >= 0; i--)
+		{
+			for (int j = M - 1; j >= 0; j--)
+			{
+				Str[k] = Arr[i][j];
+				k++;
+			}
+		}
+	}
+	void str_build_by_colomn()
+	{
+		size_t k = 0;
+
+		for (int i = 0; i < M; i++)
+		{
+			for (int j = 0; j < N; j++)
+			{
+				Str[k] = Arr[j][i];
+				k++;
+			}
+		}
+	}
+	void str_build_re_by_colomn()
+	{
+		size_t k = 0;
+
+		for (int i = M - 1; i >= 0; i--)
+		{
+			for (int j = N - 1; j >= 0; j--)
+			{
+				Str[k] = Arr[j][i];
+				k++;
+			}
+		}
+	}
+	void str_build(size_t a)
+	{
+		switch (a)
+		{
+		case 0:
+			str_build_by_line();
+			break;
+		case 1:
+			str_build_re_by_line();
+			break;
+		case 2:
+			str_build_by_colomn();
+			break;
+
+		case 3:
+			str_build_re_by_colomn();
+		}
+	}
+	void str_create()
+	{
+		Str = new char[N*M];
+	}
+
+	void arr_build_by_line()
+	{
+		size_t k = 0;
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < M; j++)
+			{
+				Arr[i][j] = Str[k];
+				k++;
+			}
+		}
+	}
+	void arr_build_re_by_line()
+	{
+		size_t k = 0;
+		for (int i = N - 1; i >= 0; i--)
+		{
+			for (int j = M - 1; j >= 0; j--)
+			{
+				Arr[i][j] = Str[k];
+				k++;
+			}
+		}
+	}
+	void arr_build_by_colomn()
+	{
+		size_t k = 0;
+		for (int i = 0; i < N; i++)
+		{
+			for (int j = 0; j < M; j++)
+			{
+				Arr[j][i] = Str[k];
+				k++;
+			}
+		}
+	}
+	void arr_build_re_by_colomn()
+	{
+		size_t k = 0;
+		for (int i = M - 1; i >= 0; i--)
+		{
+			for (int j = N - 1; j >= 0; j--)
+			{
+				Arr[j][i] = Str[k];
+				k++;
+			}
+		}
+	}
+	void arr_build(size_t a)
+	{
+		switch (a)
+		{
+		case 0:
+			arr_build_by_line();
+			break;
+		case 1:
+			arr_build_re_by_line();
+			break;
+		case 2:
+			arr_build_by_colomn();
+			break;
+		case 3:
+			arr_build_re_by_colomn();
+			break;
+		}
+	}
+	double uniform01()
+	{
+		return (double)rand() / (double)RAND_MAX;
+	}
+	void apply_rule()
+	{
+		double p = 0.02, q = 0.1, r = 0.01;
+		for (size_t i = 0; i < Size - 1;)
+		{
+			if (uniform01() < p && Str[i] == '1' && Str[i + 1] == '0')
+			{
+				Str[i] = '0';
+				Str[i + 1] = '1';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < p && Str[i] == '0' && Str[i + 1] == '1')
+			{
+				Str[i] = '1';
+				Str[i + 1] = '0';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < p && Str[i] == '2' && Str[i + 1] == '0')
+			{
+				Str[i] = '0';
+				Str[i + 1] = '2';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < p && Str[i] == '0' && Str[i + 1] == '2')
+			{
+				Str[i] = '2';
+				Str[i + 1] = '0';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < p && Str[i] == '1' && Str[i + 1] == '2')
+			{
+				Str[i] = '2';
+				Str[i + 1] = '1';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < p && Str[i] == '2' && Str[i + 1] == '1')
+			{
+				Str[i] = '1';
+				Str[i + 1] = '2';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < q && Str[i] == '1' && Str[i + 1] == '0')
+			{
+				Str[i] = '1';
+				Str[i + 1] = '1';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < q && Str[i] == '1' && Str[i + 1] == '2')
+			{
+				Str[i] = '2';
+				Str[i + 1] = '2';
+				i += 2 + rand() % 3;
+			}
+			else if (uniform01() < r && Str[i] == '2')
+			{
+				Str[i] = '0';
+				i += 2 + rand() % 3;
+			}
+			else
+				i++;
+		}
+	}
+
+	void map_draw(int frame)
+	{
+		int a = 0, b = 0; //prey predator
+
+
+		for (size_t i = 0; i < N * Scale; i++)
+		{
+			for (size_t j = 0; j < M * Scale; j++)
+			{
+				switch (Arr[i / Scale][j / Scale])
+				{
+				case'0':
+					Image[i][j] = png::rgb_pixel(0, 0, 0);
+					break;
+				case '1':
+					Image[i][j] = png::rgb_pixel(0, 255, 0);
+					a++;
+					break;
+				case '2':
+					Image[i][j] = png::rgb_pixel(255, 0, 0);
+					b++;
+					break;
+				}
+			}
+		}
+		
+		if (frame % 10 == 0)
+		{
+			Image.write("out/frame" + std::to_string(frame) + ".png");
+			std::cout << frame << " " << a << " " << b << std::endl;
+		}
+	}
+
+	void frame_maker(size_t a)
+	{
+		str_build(a);
+		apply_rule();
+		arr_build(a);
+	}
+	void set_frames(size_t frames)
+	{
+		Frames = frames;
+	}
+	size_t get_frames()
+	{
+		return Frames;
+	}
+
+
+	Marksys()
+	{
+
+	}
+};
+
+
+void print_menu(int argc, char** argv, class Marksys& marksys) //добавить обработку ошибок
+{
+	system("cls"); // очищаем экран
+	std::cout << "There are " << argc-1 << " arguments:\n";
+	std::cout << ">";
+
+	if (argc == 1)
+	{
+		std::cout << "Enter -help if you don't know what to do" << std::endl;
+		exit(1);
+	}
+	else
+	{
+		for (int i = 1; i < argc; i++)
+		{
+			if (strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "--h") == 0)
+			{
+				std::cout <<
+					"-help or --h: list of commands + example \n" <<
+					"-setsize: set matrix size n x m. -setsize 50 50 \n" <<
+					"-setscale: set  pixel size. -setscale 2 \n" <<
+					"-countframes: set number of frames. -countframes 1000 \n";
+			exit(1);
+			}
+		}
+		for (int i = 1; i < argc; i++)
+		{
+			if (strcmp(argv[i], "-setsize") == 0)
+			{
+				marksys.set_size(std::atoi(argv[i + 1]), atoi(argv[i + 2]));
+				i+= 2;
+			}
+			else if (strcmp(argv[i], "-setscale") == 0)
+			{
+				marksys.set_scale(std::atoi(argv[i + 1]));
+				i += 1;
+			}
+			else if (strcmp(argv[i], "-countframes") == 0)
+			{
+				marksys.set_frames(std::atoi(argv[i + 1]));
+				i += 1;
+			}
+			else
+			{
+				std::cout << "unknown command " << "\"" << argv[i] << "\"";
+				exit(1);
+			}
+		}
+		marksys.set_image();
+
 	}
 }
-void frame_maker(char** matrix, char* str, size_t n, size_t m, size_t a)
+
+int main(int argc, char** argv)
 {
-	str_build(matrix, str, n, m, a);
-	apply_rule(str, 50, n * m);
-	arr_build(matrix, str, n, m, a);
-}
-int main()
-{
-	int n = 100, m = 100;
 	srand(time(NULL));
-	png::image<png::rgb_pixel> image(n, m);
 
-	char** matrix = matrix_create(n, m);
-	matrix_fill(matrix, n, m);
+	Matrix matrix;
+	char** mat = matrix.get_matrix();
 
+
+
+
+	//size_t N = 20, M = 20, Scale = 1, Size = N * M;
+	//png::image<png::rgb_pixel> image (N * Scale, M * Scale);
+	Marksys marksys;
+	print_menu(argc, argv, marksys);
+
+
+	marksys.matrix_create();
+	marksys.matrix_fill();
 	int a = rand() % 4;
-	char* str = str_create(n * m);
+	marksys.str_create();
+	
 
-	frame_maker(matrix, str, n, m, a);
-	for (int i = 0; i < 5000; i++)
+
+	for (int i = 0; i < marksys.get_frames(); i++)
 	{
 		a = rand() % 4;
-		frame_maker(matrix, str, n, m, a);
-		map_draw(image, n, m, matrix, i);
+		marksys.frame_maker(a);
+		marksys.map_draw(i);
+
 	}
+
+
+
 }
