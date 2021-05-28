@@ -5,104 +5,73 @@
 #include <vector>
 
 
-class Matrix
+
+
+struct Matrix
 {
-	char** Arr = nullptr;
-	size_t N = 5, M = 5;
-public:
-	Matrix(size_t n, size_t m);
-	Matrix();
-	~Matrix();
-	void fill();
-
-
-	Matrix(size_t n, size_t m)
-	{
-		N = n;
-		M = m;
-		char** arr = new char* [n];
-		for (int i = 0; i < n; i++)
-			arr[i] = new char[m];
-		Arr = arr;
-		fill();
-	}
-	Matrix()
-	{
-		char** arr = new char* [N];
-		for (int i = 0; i < N; i++)
-			arr[i] = new char[M];
-		Arr = arr;
-		fill();
-	}
-	~Matrix()
-	{
-		for (int i = 0; i < N; i++)
-			delete[] Arr[i]; 
-		delete[] Arr;
-	}
-
-	void fill()
-	{
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j < M; j++)
-				Arr[i][j] = (char)(rand() % 3 + 48);
-	}
-	char** get_matrix()
-	{
-		return Arr;
-	}
+	size_t Height,
+		Width;
+	char** Arr;
+	char* Str = {};
 };
-
-
-
+struct Image
+{
+	size_t Frames,
+		Scale;
+	png::image<png::rgb_pixel> image;
+};
 
 class Marksys
 {
-	size_t N = 20, M = 20, Scale = 1, Size = N*M, Frames = 1000;
-	char** Arr = {};
-	char* Str = {};
-	png::image<png::rgb_pixel> Image = {};
 public:
+	Matrix mat;
+	Image im;
 
 
+	void dflt()
+	{
+		mat.Height = 50;
+		mat.Width = 25;
+		im.Frames = 5000;
+		im.Scale = 2;
+	}
 	void set_size(size_t n, size_t m)
 	{
-		N = n;
-		M = m;
-		Size = N * M;
+		mat.Height = n;
+		mat.Width = m;
 	}
 	void set_scale(size_t scale)
 	{
-		Scale = scale;
+		im.Scale = scale;
 	}
 	void set_image()
 	{
-		Image = png::image<png::rgb_pixel> (N * Scale, M * Scale);
+		im.image = png::image<png::rgb_pixel> (mat.Width * im.Scale, mat.Height * im.Scale);
 	}
 
 	void matrix_create()
 	{
-		char** arr = new char* [N];
-		for (int i = 0; i < N; i++)
-			arr[i] = new char[M];
+		char** Arr = new char* [mat.Height];
+		for (int i = 0; i < mat.Height; i++)
+			Arr[i] = new char[mat.Width];
 
-		Arr = arr;
+		mat.Arr = Arr;
 	}
 	void matrix_fill()
 	{
-		for (int i = 0; i < N; i++)
-			for (int j = 0; j < M; j++)
-				Arr[i][j] = (char)(rand() % 3 + 48);
+		for (int i = 0; i < mat.Height; i++)
+			for (int j = 0; j < mat.Width; j++)
+				mat.Arr[i][j] = (char)(rand() % 3 + 48);
 	}
 
 	void str_build_by_line()
 	{
 		size_t k = 0;
-		for (int i = 0; i < N; i++)
+		for (int i = 0; i < mat.Height; i++)
 		{
-			for (int j = 0; j < M; j++)
+			for (int j = 0; j < mat.Width; j++)
 			{
-				Str[k] = Arr[i][j];
+				mat.Str[k] = mat.Arr[i][j];
 				k++;
 			}
 		}
@@ -111,11 +80,11 @@ public:
 	{
 		size_t k = 0;
 
-		for (int i = N - 1; i >= 0; i--)
+		for (int i = mat.Height - 1; i >= 0; i--)
 		{
-			for (int j = M - 1; j >= 0; j--)
+			for (int j = mat.Width - 1; j >= 0; j--)
 			{
-				Str[k] = Arr[i][j];
+				mat.Str[k] = mat.Arr[i][j];
 				k++;
 			}
 		}
@@ -124,11 +93,11 @@ public:
 	{
 		size_t k = 0;
 
-		for (int i = 0; i < M; i++)
+		for (int i = 0; i < mat.Width; i++)
 		{
-			for (int j = 0; j < N; j++)
+			for (int j = 0; j < mat.Height; j++)
 			{
-				Str[k] = Arr[j][i];
+				mat.Str[k] = mat.Arr[j][i];
 				k++;
 			}
 		}
@@ -137,11 +106,11 @@ public:
 	{
 		size_t k = 0;
 
-		for (int i = M - 1; i >= 0; i--)
+		for (int i = mat.Width - 1; i >= 0; i--)
 		{
-			for (int j = N - 1; j >= 0; j--)
+			for (int j = mat.Height - 1; j >= 0; j--)
 			{
-				Str[k] = Arr[j][i];
+				mat.Str[k] = mat.Arr[j][i];
 				k++;
 			}
 		}
@@ -166,17 +135,17 @@ public:
 	}
 	void str_create()
 	{
-		Str = new char[N*M];
+		mat.Str = new char[mat.Height * mat.Width];
 	}
 
 	void arr_build_by_line()
 	{
 		size_t k = 0;
-		for (int i = 0; i < N; i++)
+		for (int i = 0; i < mat.Height; i++)
 		{
-			for (int j = 0; j < M; j++)
+			for (int j = 0; j < mat.Width; j++)
 			{
-				Arr[i][j] = Str[k];
+				mat.Arr[i][j] = mat.Str[k];
 				k++;
 			}
 		}
@@ -184,11 +153,11 @@ public:
 	void arr_build_re_by_line()
 	{
 		size_t k = 0;
-		for (int i = N - 1; i >= 0; i--)
+		for (int i = mat.Height - 1; i >= 0; i--)
 		{
-			for (int j = M - 1; j >= 0; j--)
+			for (int j = mat.Width - 1; j >= 0; j--)
 			{
-				Arr[i][j] = Str[k];
+				mat.Arr[i][j] = mat.Str[k];
 				k++;
 			}
 		}
@@ -196,11 +165,11 @@ public:
 	void arr_build_by_colomn()
 	{
 		size_t k = 0;
-		for (int i = 0; i < N; i++)
+		for (int i = 0; i < mat.Width; i++)
 		{
-			for (int j = 0; j < M; j++)
+			for (int j = 0; j < mat.Height; j++)
 			{
-				Arr[j][i] = Str[k];
+				mat.Arr[j][i] = mat.Str[k];
 				k++;
 			}
 		}
@@ -208,11 +177,11 @@ public:
 	void arr_build_re_by_colomn()
 	{
 		size_t k = 0;
-		for (int i = M - 1; i >= 0; i--)
+		for (int i = mat.Width - 1; i >= 0; i--)
 		{
-			for (int j = N - 1; j >= 0; j--)
+			for (int j = mat.Height - 1; j >= 0; j--)
 			{
-				Arr[j][i] = Str[k];
+				mat.Arr[j][i] = mat.Str[k];
 				k++;
 			}
 		}
@@ -242,59 +211,59 @@ public:
 	void apply_rule()
 	{
 		double p = 0.02, q = 0.1, r = 0.01;
-		for (size_t i = 0; i < Size - 1;)
+		for (size_t i = 0; i < mat.Height * mat.Width - 1;)
 		{
-			if (uniform01() < p && Str[i] == '1' && Str[i + 1] == '0')
+			if (uniform01() < p && mat.Str[i] == '1' && mat.Str[i + 1] == '0')
 			{
-				Str[i] = '0';
-				Str[i + 1] = '1';
+				mat.Str[i] = '0';
+				mat.Str[i + 1] = '1';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < p && Str[i] == '0' && Str[i + 1] == '1')
+			else if (uniform01() < p && mat.Str[i] == '0' && mat.Str[i + 1] == '1')
 			{
-				Str[i] = '1';
-				Str[i + 1] = '0';
+				mat.Str[i] = '1';
+				mat.Str[i + 1] = '0';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < p && Str[i] == '2' && Str[i + 1] == '0')
+			else if (uniform01() < p && mat.Str[i] == '2' && mat.Str[i + 1] == '0')
 			{
-				Str[i] = '0';
-				Str[i + 1] = '2';
+				mat.Str[i] = '0';
+				mat.Str[i + 1] = '2';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < p && Str[i] == '0' && Str[i + 1] == '2')
+			else if (uniform01() < p && mat.Str[i] == '0' && mat.Str[i + 1] == '2')
 			{
-				Str[i] = '2';
-				Str[i + 1] = '0';
+				mat.Str[i] = '2';
+				mat.Str[i + 1] = '0';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < p && Str[i] == '1' && Str[i + 1] == '2')
+			else if (uniform01() < p && mat.Str[i] == '1' && mat.Str[i + 1] == '2')
 			{
-				Str[i] = '2';
-				Str[i + 1] = '1';
+				mat.Str[i] = '2';
+				mat.Str[i + 1] = '1';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < p && Str[i] == '2' && Str[i + 1] == '1')
+			else if (uniform01() < p && mat.Str[i] == '2' && mat.Str[i + 1] == '1')
 			{
-				Str[i] = '1';
-				Str[i + 1] = '2';
+				mat.Str[i] = '1';
+				mat.Str[i + 1] = '2';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < q && Str[i] == '1' && Str[i + 1] == '0')
+			else if (uniform01() < q && mat.Str[i] == '1' && mat.Str[i + 1] == '0')
 			{
-				Str[i] = '1';
-				Str[i + 1] = '1';
+				mat.Str[i] = '1';
+				mat.Str[i + 1] = '1';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < q && Str[i] == '1' && Str[i + 1] == '2')
+			else if (uniform01() < q && mat.Str[i] == '1' && mat.Str[i + 1] == '2')
 			{
-				Str[i] = '2';
-				Str[i + 1] = '2';
+				mat.Str[i] = '2';
+				mat.Str[i + 1] = '2';
 				i += 2 + rand() % 3;
 			}
-			else if (uniform01() < r && Str[i] == '2')
+			else if (uniform01() < r && mat.Str[i] == '2')
 			{
-				Str[i] = '0';
+				mat.Str[i] = '0';
 				i += 2 + rand() % 3;
 			}
 			else
@@ -305,23 +274,23 @@ public:
 	void map_draw(int frame)
 	{
 		int a = 0, b = 0; //prey predator
+		
 
-
-		for (size_t i = 0; i < N * Scale; i++)
+		for (size_t i = 0; i < mat.Height * im.Scale; i++)
 		{
-			for (size_t j = 0; j < M * Scale; j++)
+			for (size_t j = 0; j < mat.Width * im.Scale; j++)
 			{
-				switch (Arr[i / Scale][j / Scale])
+				switch (mat.Arr[i / im.Scale][j / im.Scale])
 				{
 				case'0':
-					Image[i][j] = png::rgb_pixel(0, 0, 0);
+					im.image[i][j] = png::rgb_pixel(0, 0, 0);
 					break;
 				case '1':
-					Image[i][j] = png::rgb_pixel(0, 255, 0);
+					im.image[i][j] = png::rgb_pixel(0, 255, 0);
 					a++;
 					break;
 				case '2':
-					Image[i][j] = png::rgb_pixel(255, 0, 0);
+					im.image[i][j] = png::rgb_pixel(255, 0, 0);
 					b++;
 					break;
 				}
@@ -330,8 +299,8 @@ public:
 		
 		if (frame % 10 == 0)
 		{
-			Image.write("out/frame" + std::to_string(frame) + ".png");
-			std::cout << frame << " " << a << " " << b << std::endl;
+			im.image.write("out/frame" + std::to_string(frame) + ".png");
+			std::cout << frame << " " << a / im.Scale << " " << b/im.Scale << std::endl;
 		}
 	}
 
@@ -343,27 +312,33 @@ public:
 	}
 	void set_frames(size_t frames)
 	{
-		Frames = frames;
+		im.Frames = frames;
 	}
 	size_t get_frames()
 	{
-		return Frames;
+		return im.Frames;
 	}
-
-
 	Marksys()
 	{
+	}
+	~Marksys()
+	{
+		//delete[] mat.Str;
+		//for (int i = 0; i < mat.Height; i++)
+			//delete[] mat.Arr[i];
+		//delete[] mat.Arr;
 
 	}
 };
 
 
-void print_menu(int argc, char** argv, class Marksys& marksys) //добавить обработку ошибок
+void menu(int argc, char** argv, class Marksys& marksys) //добавить обработку ошибок
 {
+	marksys.dflt();
 	system("cls"); // очищаем экран
 	std::cout << "There are " << argc-1 << " arguments:\n";
 	std::cout << ">";
-
+	marksys.dflt();
 	if (argc == 1)
 	{
 		std::cout << "Enter -help if you don't know what to do" << std::endl;
@@ -379,6 +354,7 @@ void print_menu(int argc, char** argv, class Marksys& marksys) //добавит�
 					"-help or --h: list of commands + example \n" <<
 					"-setsize: set matrix size n x m. -setsize 50 50 \n" <<
 					"-setscale: set  pixel size. -setscale 2 \n" <<
+					"-default: default settings . -default \n" <<
 					"-countframes: set number of frames. -countframes 1000 \n";
 			exit(1);
 			}
@@ -400,6 +376,10 @@ void print_menu(int argc, char** argv, class Marksys& marksys) //добавит�
 				marksys.set_frames(std::atoi(argv[i + 1]));
 				i += 1;
 			}
+			else if (strcmp(argv[i], "-default") == 0)
+			{
+				marksys.dflt();
+			}
 			else
 			{
 				std::cout << "unknown command " << "\"" << argv[i] << "\"";
@@ -415,16 +395,11 @@ int main(int argc, char** argv)
 {
 	srand(time(NULL));
 
-	Matrix matrix;
-	char** mat = matrix.get_matrix();
 
 
 
-
-	//size_t N = 20, M = 20, Scale = 1, Size = N * M;
-	//png::image<png::rgb_pixel> image (N * Scale, M * Scale);
 	Marksys marksys;
-	print_menu(argc, argv, marksys);
+	menu(argc, argv, marksys);
 
 
 	marksys.matrix_create();
@@ -432,8 +407,6 @@ int main(int argc, char** argv)
 	int a = rand() % 4;
 	marksys.str_create();
 	
-
-
 	for (int i = 0; i < marksys.get_frames(); i++)
 	{
 		a = rand() % 4;
