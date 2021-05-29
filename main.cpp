@@ -5,8 +5,6 @@
 #include <vector>
 
 
-
-
 struct Matrix
 {
 	size_t Height,
@@ -28,13 +26,6 @@ public:
 	Image im;
 
 
-	void dflt()
-	{
-		mat.Height = 50;
-		mat.Width = 25;
-		im.Frames = 5000;
-		im.Scale = 2;
-	}
 	void set_size(size_t n, size_t m)
 	{
 		mat.Height = n;
@@ -323,20 +314,29 @@ public:
 	}
 	~Marksys()
 	{
-		//delete[] mat.Str;
-		//for (int i = 0; i < mat.Height; i++)
-			//delete[] mat.Arr[i];
-		//delete[] mat.Arr;
-
+		delete[] mat.Str;
+		for (int i = 0; i < mat.Height; i++)
+			delete[] mat.Arr[i];
+		delete[] mat.Arr;
+	}
+	void dflt()
+	{
+		mat.Height = 50;
+		mat.Width = 25;
+		im.Frames = 1000;
+		im.Scale = 2;
 	}
 };
 
-
+bool is_number(const std::string& s)
+{
+	return !s.empty() && (s.find_first_not_of("0123456789") == s.npos) && std::stoi(s) <= 0;
+}
 void menu(int argc, char** argv, class Marksys& marksys) //добавить обработку ошибок
 {
 	marksys.dflt();
 	system("cls"); // очищаем экран
-	std::cout << "There are " << argc-1 << " arguments:\n";
+	std::cout << "There are " << argc - 1 << " arguments:\n";
 	std::cout << ">";
 	marksys.dflt();
 	if (argc == 1)
@@ -346,6 +346,7 @@ void menu(int argc, char** argv, class Marksys& marksys) //добавить об
 	}
 	else
 	{
+		size_t arg = 0;
 		for (int i = 1; i < argc; i++)
 		{
 			if (strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "--h") == 0)
@@ -356,23 +357,39 @@ void menu(int argc, char** argv, class Marksys& marksys) //добавить об
 					"-setscale: set  pixel size. -setscale 2 \n" <<
 					"-default: default settings . -default \n" <<
 					"-countframes: set number of frames. -countframes 1000 \n";
-			exit(1);
+				exit(1);
 			}
 		}
 		for (int i = 1; i < argc; i++)
 		{
+			arg++;
 			if (strcmp(argv[i], "-setsize") == 0)
 			{
+				if (arg+3 > argc || !is_number(argv[i+1]) || !is_number(argv[i+2]))
+				{
+					std::cout << "Invalid size \n";
+					exit(1);
+				}
 				marksys.set_size(std::atoi(argv[i + 1]), atoi(argv[i + 2]));
-				i+= 2;
+				i += 2;
 			}
 			else if (strcmp(argv[i], "-setscale") == 0)
 			{
+				if (arg + 2 > argc || !is_number(argv[i + 1]))
+				{
+					std::cout << "Invalid scale \n";
+					exit(1);
+				}
 				marksys.set_scale(std::atoi(argv[i + 1]));
 				i += 1;
 			}
 			else if (strcmp(argv[i], "-countframes") == 0)
 			{
+				if (arg + 2 > argc || !is_number(argv[i + 1]))
+				{
+					std::cout << "Invalid count \n";
+					exit(1);
+				}
 				marksys.set_frames(std::atoi(argv[i + 1]));
 				i += 1;
 			}
@@ -386,27 +403,23 @@ void menu(int argc, char** argv, class Marksys& marksys) //добавить об
 				exit(1);
 			}
 		}
-		marksys.set_image();
-
 	}
+	marksys.set_image();
 }
 
 int main(int argc, char** argv)
 {
 	srand(time(NULL));
 
-
-
-
 	Marksys marksys;
-	menu(argc, argv, marksys);
 
+	menu(argc, argv, marksys);
 
 	marksys.matrix_create();
 	marksys.matrix_fill();
 	int a = rand() % 4;
 	marksys.str_create();
-	
+
 	for (int i = 0; i < marksys.get_frames(); i++)
 	{
 		a = rand() % 4;
@@ -414,7 +427,4 @@ int main(int argc, char** argv)
 		marksys.map_draw(i);
 
 	}
-
-
-
 }
