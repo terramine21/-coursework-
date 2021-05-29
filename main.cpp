@@ -25,7 +25,6 @@ public:
 	Matrix mat;
 	Image im;
 
-
 	void set_size(size_t n, size_t m)
 	{
 		mat.Height = n;
@@ -330,7 +329,7 @@ public:
 
 bool is_number(const std::string& s)
 {
-	return !s.empty() && (s.find_first_not_of("0123456789") == s.npos) && std::stoi(s) <= 0;
+	return !s.empty() && (s.find_first_not_of("0123456789") == s.npos) && std::stoi(s) > 0;
 }
 void menu(int argc, char** argv, class Marksys& marksys) //добавить обработку ошибок
 {
